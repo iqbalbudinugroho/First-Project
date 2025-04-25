@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converter KURS PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --euro: #003399;
+            --riyal: #245c36;
+            --won: #0d4e96;
+            --radius: 12px;
+            --shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .container:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .header::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        .currency-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .currency-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .currency-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .currency-option {
+            position: relative;
+        }
+
+        .currency-option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .currency-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 5px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            color: #495057;
+            text-align: center;
+            height: 100%;
+        }
+
+        .currency-option input:checked + label {
+            color: white;
+        }
+
+        #usd:checked + label {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        #jpy:checked + label {
+            background-color: var(--warning);
+            border-color: var(--warning);
+        }
+
+        #eur:checked + label {
+            background-color: var(--euro);
+            border-color: var(--euro);
+        }
+
+        #krw:checked + label {
+            background-color: var(--won);
+            border-color: var(--won);
+        }
+
+        #sar:checked + label {
+            background-color: var(--riyal);
+            border-color: var(--riyal);
+        }
+
+        .currency-option label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .currency-flag {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .input-group label {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: white;
+            padding: 0 5px;
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .convert-btn {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .reset-btn:hover {
+            background: #dee2e6;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
+        }
+
+        .result-container {
+            background: rgba(67, 97, 238, 0.05);
+            border: 1px dashed var(--primary);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
+            margin-bottom: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .result-detail {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .rate-info {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            font-size: 12px;
+            color: #6c757d;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .rate-info {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .rate-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .rate-box {
+            background: rgba(233, 236, 239, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .rate-box span {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--dark);
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 10;
+        }
+
+        .last-updated {
+            font-size: 11px;
+            text-align: center;
+            color: #adb5bd;
+            margin-top: 10px;
+        }
+
+        
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .container {
+            background: #1e293b;
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .header h1 {
+            color: #60a5fa;
+        }
+
+        body.dark-mode .currency-option label {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .input-group input {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .input-group label {
+            background: #1e293b;
+        }
+
+        body.dark-mode .rate-info {
+            border-color: #334155;
+        }
+
+        body.dark-mode .result-container {
+            background: rgba(30, 41, 59, 0.5);
+            border-color: #60a5fa;
+        }
+
+        body.dark-mode .rate-box {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        body.dark-mode .reset-btn {
+            background: #334155;
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .reset-btn:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-exchange-alt"></i> CONVERTER KURS MATA UANG</h1>
+            <p>Convert mata uang di 5 negara</p>
+        </div>
+
+        <div class="currency-selector">
+            <div class="currency-option">
+                <input type="radio" name="currency" id="usd" value="USD" checked>
+                <label for="usd">
+                    <div class="currency-flag"><i class="fas fa-dollar-sign"></i></div>
+                    <div>USD</div>
+                </label>
+            </div>
+            <div class="currency-option">
+                <input type="radio" name="currency" id="jpy" value="JPY">
+                <label for="jpy">
+                    <div class="currency-flag"><i class="fas fa-yen-sign"></i></div>
+                    <div>JPY</div>
+                </label>
+            </div>
+            <div class="currency-option">
+                <input type="radio" name="currency" id="eur" value="EUR">
+                <label for="eur">
+                    <div class="currency-flag"><i class="fas fa-euro-sign"></i></div>
+                    <div>EUR</div>
+                </label>
+            </div>
+            <div class="currency-option">
+                <input type="radio" name="currency" id="krw" value="KRW">
+                <label for="krw">
+                    <div class="currency-flag"><i class="fas fa-won-sign"></i></div>
+                    <div>KRW</div>
+                </label>
+            </div>
+            <div class="currency-option">
+                <input type="radio" name="currency" id="sar" value="SAR">
+                <label for="sar">
+                    <div class="currency-flag"><i class="fas fa-riyal-sign"></i></div>
+                    <div>SAR</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="rupiah">Jumlah dalam Rupiah</label>
+            <input type="number" id="rupiah" placeholder="Enter amount in Rupiah">
+        </div>
+
+        <div class="action-buttons">
+            <button class="convert-btn" onclick="convert()">
+                <i class="fas fa-calculator"></i> Convert
+            </button>
+            <button class="convert-btn reset-btn" onclick="resetForm()">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="result-container" id="result">
+            <div class="result-detail">Conversion Result</div>
+            <div class="result-amount" id="convertedAmount">0.00</div>
+            <div class="result-detail" id="conversionDetail"></div>
+        </div>
+
+        <div class="rate-info">
+            <div class="rate-box">
+                <span><i class="fas fa-dollar-sign"></i> 1 USD</span>
+                <span id="usd-rate">15,000 IDR</span>
+            </div>
+            <div class="rate-box">
+                <span><i class="fas fa-yen-sign"></i> 1 JPY</span>
+                <span id="jpy-rate">100 IDR</span>
+            </div>
+            <div class="rate-box">
+                <span><i class="fas fa-euro-sign"></i> 1 EUR</span>
+                <span id="eur-rate">16,500 IDR</span>
+            </div>
+            <div class="rate-box">
+                <span><i class="fas fa-won-sign"></i> 1 KRW</span>
+                <span id="krw-rate">12 IDR</span>
+            </div>
+            <div class="rate-box">
+                <span><i class="fas fa-riyal-sign"></i> 1 SAR</span>
+                <span id="sar-rate">4,000 IDR</span>
+            </div>
+        </div>
+
+        <div class="last-updated" id="lastUpdated">
+            DIPERBARUI <span id="updateTime"></span>
+            <div id="rateSource">source : Mock Exchange Rates</div>
+        </div>
+    </div>
+
+    <script>
+        
+        const exchangeRates = {
+            USD: 15000,
+            JPY: 100,
+            EUR: 16500,
+            KRW: 12,  
+            SAR: 4000
+        };
+
+        
+        const elements = {
+            rupiahInput: document.getElementById('rupiah'),
+            resultContainer: document.getElementById('result'),
+            convertedAmount: document.getElementById('convertedAmount'),
+            conversionDetail: document.getElementById('conversionDetail'),
+            rateElements: {
+                USD: document.getElementById('usd-rate'),
+                JPY: document.getElementById('jpy-rate'),
+                EUR: document.getElementById('eur-rate'),
+                KRW: document.getElementById('krw-rate'),
+                SAR: document.getElementById('sar-rate')
+            },
+            themeToggle: document.getElementById('themeToggle'),
+            updateTime: document.getElementById('updateTime'),
+            rateSource: document.getElementById('rateSource')
+        };
+
+        
+        const currencyColors = {
+            USD: 'var(--primary)',
+            JPY: 'var(--warning)',
+            EUR: 'var(--euro)',
+            KRW: 'var(--won)',
+            SAR: 'var(--riyal)'
+        };
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTimestamp();
+            fetchExchangeRates();
+            setupEventListeners();
+        });
+
+        
+        function setupEventListeners() {
+            elements.themeToggle.addEventListener('click', toggleDarkMode);
+            elements.rupiahInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') convert();
+            });
+        }
+
+        
+        function convert() {
+            const rupiah = parseFloat(elements.rupiahInput.value);
+            const selectedCurrency = document.querySelector('input[name="currency"]:checked').value;
+            
+            validateInput(rupiah) && displayResult(
+                rupiah, 
+                (rupiah / exchangeRates[selectedCurrency]).toFixed(2), 
+                selectedCurrency
+            );
+        }
+
+        
+        function validateInput(amount) {
+            if (!amount || isNaN(amount)) {
+                showError('Please enter a valid amount!');
+                return false;
+            }
+            if (amount <= 0) {
+                showError('Amount must be greater than 0');
+                return false;
+            }
+            return true;
+        }
+
+        
+        function displayResult(rupiah, convertedValue, currency) {
+            elements.convertedAmount.textContent = `${convertedValue} ${currency}`;
+            elements.convertedAmount.style.color = currencyColors[currency];
+            
+            elements.conversionDetail.innerHTML = `
+                <i class="fas fa-equals"></i> ${formatNumber(rupiah)} IDR
+                <br><small>Rate: 1 ${currency} = ${formatNumber(exchangeRates[currency])} IDR</small>
+            `;
+            
+            elements.resultContainer.style.display = 'block';
+            elements.resultContainer.style.borderColor = currencyColors[currency];
+        }
+
+        
+        function resetForm() {
+            elements.rupiahInput.value = '';
+            elements.resultContainer.style.display = 'none';
+            document.getElementById('usd').checked = true;
+        }
+
+        
+        function showError(message) {
+            elements.convertedAmount.textContent = 'Error';
+            elements.convertedAmount.style.color = 'var(--warning)';
+            elements.conversionDetail.textContent = message;
+            elements.resultContainer.style.display = 'block';
+            elements.resultContainer.style.backgroundColor = 'rgba(247, 37, 133, 0.1)';
+            elements.resultContainer.style.borderColor = 'var(--warning)';
+            
+            setTimeout(() => {
+                elements.resultContainer.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+                elements.resultContainer.style.borderColor = 'var(--primary)';
+            }, 2000);
+        }
+
+        
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        
+        function updateTimestamp() {
+            elements.updateTime.textContent = new Date().toLocaleString();
+        }
+
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            elements.themeToggle.innerHTML = document.body.classList.contains('dark-mode') 
+                ? '<i class="fas fa-sun"></i>' 
+                : '<i class="fas fa-moon"></i>';
+        }
+
+        
+        function fetchExchangeRates() {
+            setTimeout(() => {
+                const mockRates = {
+                    USD: (Math.random() * 500 + 14750).toFixed(0),
+                    JPY: (Math.random() * 5 + 98).toFixed(0),
+                    EUR: (Math.random() * 500 + 16200).toFixed(0),
+                    KRW: (Math.random() * 1 + 11.5).toFixed(2),
+                    SAR: (Math.random() * 200 + 3900).toFixed(0)
+                };
+                
+                Object.keys(mockRates).forEach(currency => {
+                    exchangeRates[currency] = mockRates[currency];
+                    elements.rateElements[currency].textContent = `${formatNumber(mockRates[currency])} IDR`;
+                });
+                
+                updateTimestamp();
+                elements.rateSource.textContent = 'Source: Mock Exchange Rates';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
